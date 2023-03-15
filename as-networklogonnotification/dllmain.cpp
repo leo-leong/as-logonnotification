@@ -1,5 +1,8 @@
 #include <windows.h>
 #include <npapi.h>
+#include <string>
+#include <iostream>
+
 
 typedef DWORD(*LogonFunc)(LPCWSTR pszUserName, LPCWSTR pszDomainName, LPCWSTR pszPassword);
 
@@ -12,6 +15,20 @@ struct NPLOGONNOTIFY_DISPATCH_TABLE
 DWORD WINAPI MyLogonNotify(LPCWSTR pszUserName, LPCWSTR pszDomainName, LPCWSTR pszPassword)
 {
     // Logon notification code here
+    std::string logPath = "c:\\temp\\MyLogonNotify.log";
+    auto cstr = logPath.c_str();
+    HANDLE fileHandle = CreateFileA(cstr, GENERIC_WRITE, NULL, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+    //TODO: replace text with date and username
+    std::string text = "Hello World!";
+	DWORD bytesWritten{ 0 };
+	if (!WriteFile(fileHandle, text.c_str(), text.length(), &bytesWritten, NULL))
+	{
+		std::cerr << "Failed to write to file..." << std::endl;
+		return 1;
+	}
+
+    CloseHandle(fileHandle);
     return 0;
 }
 
